@@ -1,0 +1,64 @@
+<html>
+  <body>
+    <h4>websocket</h4>
+    <h5>Group: <input type="text" id="group" name="group"></h5>
+    <button onclick="bjoin();">join group</button><br />
+    <input id="text" type="text" />
+    <span id="out"></span>
+    <script>
+      var group = randomString(10);
+      document.getElementById("group").value = group;
+
+      var ws = new WebSocket("ws://localhost:5000");
+      ws.onerror = function (e) {
+        out.innerHTML = e;
+      };
+
+      ws.onclose = function (e) {
+        out.innerHTML = "closed" + e;
+      };
+
+      ws.onopen = function () {
+        out.innerHTML = "connected ";
+      };
+
+      ws.onmessage = function (ms) {
+        out.innerHTML += ms.data + "<br>";
+      };
+
+      function send(msg) {
+        ws.send(JSON.stringify({ msg: msg }));
+      }
+
+      function broadcast(msg, room) {
+        ws.send(JSON.stringify({ room: room, msg: msg }));
+      }
+
+      function join(room) {
+        ws.send(JSON.stringify({ join: room }));
+      }
+
+      function bjoin() {
+        alert(group);
+        join(group);
+      }
+      
+      text.onchange = function (el) {
+        //alert(el.target.value);
+        console.log(group)
+        broadcast(el.target.value, group);
+      };
+
+      function randomString(length) {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+      }
+
+    </script>
+  </body>
+</html>
