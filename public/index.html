@@ -2,20 +2,26 @@
   <body>
     <h4>websocket</h4>
     <h5>Group: <input type="text" id="group" name="group"></h5>
-    <button onclick="bjoin();">join group</button><br />
+    <button onclick="bjoin();">join group</button>
+    <button onclick="closeConnect();">close</button><br />
+    <br>
     <input id="text" type="text" />
     <span id="out"></span>
     <script>
       var group = randomString(10);
       document.getElementById("group").value = group;
 
-      var ws = new WebSocket("ws://localhost:5000");
+      var token = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+      var ws = new WebSocketClient("ws://localhost:8080", [
+        token
+      ]);
+
       ws.onerror = function (e) {
-        out.innerHTML = e;
+        out.innerHTML = 'error: ' + e;
       };
 
       ws.onclose = function (e) {
-        out.innerHTML = "closed" + e;
+        out.innerHTML = "closed " + e;
       };
 
       ws.onopen = function () {
@@ -41,6 +47,11 @@
       function bjoin() {
         alert(group);
         join(group);
+      }
+
+      function closeConnect(){
+        alert('close');
+        ws.close(1000, group);
       }
       
       text.onchange = function (el) {
